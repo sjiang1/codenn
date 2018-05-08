@@ -1,7 +1,9 @@
 # Forked from [sriniiyer/codenn](https://github.com/sriniiyer/codenn)
 
-Installation extra note:
-* Torch installation: export TORCH_NVCC_FLAGS="-D__CUDA_NO_HALF_OPERATORS__"
+Extra notes on installation:
+* Torch installation: ```export TORCH_NVCC_FLAGS="-D__CUDA_NO_HALF_OPERATORS__"```
+* Cutorch installation: [torch/cutorch](https://github.com/torch/cutorch/)\
+  ```luarocks install cutorch```
 
 ---
 ---
