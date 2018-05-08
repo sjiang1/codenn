@@ -4,6 +4,8 @@ Extra notes on installation:
 * Torch installation: ```export TORCH_NVCC_FLAGS="-D__CUDA_NO_HALF_OPERATORS__"```
 * Cutorch installation: [torch/cutorch](https://github.com/torch/cutorch/)\
   ```luarocks install cutorch```
+* antlr4: we need version 4.5 specified in src/csharp/CSharp4Lexer.py\
+  ```python2 -m pip install 'antlr4-python2-runtime>=4.5,<4.6'```
 
 ---
 ---
