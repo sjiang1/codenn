@@ -68,3 +68,5 @@ src/java/JavaLexer.g4
 src/java/JavaLexer.py
 src/java/JavaLexer.tokens
 src/java/AllInOne7.java
+
+src/model/workdir/
