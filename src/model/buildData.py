@@ -7,6 +7,7 @@ import random
 import json
 import sys
 import os
+import os.path
 
 PAD = 1
 UNK = 2
@@ -35,6 +36,12 @@ def tokenizeCode(code, lang):
 
 # lang can be csharp or code
 def buildVocab(filename, code_unk_threshold, nl_unk_threshold, lang):
+  vocabfile = os.environ["CODENN_WORK"] + '/vocab.' + lang
+  if os.path.isfile(vocabfile):
+    with open(vocabfile) as json_vocabfile:
+      return json.load(json_vocabfile)
+
+    
   vocab = {
     "nl_to_num": {"UNK": UNK, "CODE_START": START, "CODE_END": END},
     "code_to_num": {"UNK": UNK, "CODE_START": START, "CODE_END": END},
