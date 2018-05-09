@@ -1,5 +1,6 @@
 from sql.SqlTemplate import SqlTemplate
 from csharp.CSharpTemplate import parseCSharp
+from java.JavaTemplate import parseJava
 import re
 import collections
 import random
@@ -26,6 +27,8 @@ def tokenizeCode(code, lang):
     typedCode = parseCSharp(code)
   elif lang == "python":
     typedCode = q.strip().decode('utf-8').encode('ascii', 'replace').split("\\s")
+  elif lang == "java":
+    typedCode = parseJava(code)
 
   tokens = [re.sub( '\s+', ' ', x.strip())  for x in typedCode]
   return tokens

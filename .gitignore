@@ -59,3 +59,12 @@ nosetests.xml
 *.dot
 *.eps
 *.pdf
+
+data/java/train.txt
+data/java/valid.txt
+data/java/test.txt
+
+src/java/JavaLexer.g4
+src/java/JavaLexer.py
+src/java/JavaLexer.tokens
+src/java/AllInOne7.java
