@@ -134,9 +134,13 @@ if __name__ == '__main__':
   code_unk_threshold = int(sys.argv[4])
   nl_unk_threshold = int(sys.argv[5])
 
-
-  vocab = buildVocab(os.environ['CODENN_DIR'] + '/data/stackoverflow/' + lang + '/train.txt', code_unk_threshold, nl_unk_threshold, lang)
-  get_data(os.environ['CODENN_DIR'] + '/data/stackoverflow/' + lang + '/train.txt', vocab, False, max_code_len, max_nl_len)
-  get_data(os.environ['CODENN_DIR'] + '/data/stackoverflow/' + lang + '/valid.txt', vocab, False, max_code_len, max_nl_len)
-  get_data(os.environ['CODENN_DIR'] + '/data/stackoverflow/' + lang + '/dev/dev.txt', vocab, True, max_code_len, max_nl_len)
-  get_data(os.environ['CODENN_DIR'] + '/data/stackoverflow/' + lang + '/eval/eval.txt', vocab, True, max_code_len, max_nl_len)
+  if lang == 'java':
+    datadir = os.environ['CODENN_DIR'] + '/data/' + lang
+  else:
+    datadir = os.environ['CODENN_DIR'] + '/data/stackoverflow/' + lang
+  
+  vocab = buildVocab(datadir + '/train.txt', code_unk_threshold, nl_unk_threshold, lang)
+  get_data(datadir + '/train.txt', vocab, False, max_code_len, max_nl_len)
+  get_data(datadir + '/valid.txt', vocab, False, max_code_len, max_nl_len)
+  get_data(datadir + '/dev/dev.txt', vocab, True, max_code_len, max_nl_len)
+  get_data(datadir + '/eval/eval.txt', vocab, True, max_code_len, max_nl_len)
