@@ -10,7 +10,7 @@ Extra notes on installation:
   ```python2 -m pip install 'antlr4-python2-runtime>=4.5,<4.6'```
 * antlr4-complete: to create a parser for Java, we need to download:\
   ```curl -O http://www.antlr.org/download/antlr-4.5.3-complete.jar```\
-    ```export CLASSPATH=".:[path: antlr-4.7.1-complete.jar]:$CLASSPATH"```
+    ```export CLASSPATH=".:[path: antlr-4.5.3-complete.jar]:$CLASSPATH"```
 
 ---
 ---
