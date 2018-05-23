@@ -134,7 +134,7 @@ if __name__ == '__main__':
   nl_unk_threshold = int(sys.argv[5])
 
   if lang == 'cpp':
-    datadir = os.environ['CODENN_WORK']
+    datadir = os.path.join(os.environ['CODENN_DIR'], 'data/cpp')
   else:
     print 'lang should be cpp instead of ' + lang
     sys.exit(1)
@@ -148,7 +148,6 @@ if __name__ == '__main__':
   checkfile(testfile)
   
   vocab = buildVocab(trainfile, code_unk_threshold, nl_unk_threshold, lang)
-  sys.exit()
   get_data(trainfile, vocab, False, max_code_len, max_nl_len)
   get_data(validfile, vocab, False, max_code_len, max_nl_len)
   get_data(testfile, vocab, False, max_code_len, max_nl_len)
