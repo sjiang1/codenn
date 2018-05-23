@@ -70,3 +70,6 @@ src/java/JavaLexer.tokens
 src/java/AllInOne7.java
 
 src/model/workdir/
+
+data/cpp/
+data/java/

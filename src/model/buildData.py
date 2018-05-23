@@ -1,6 +1,4 @@
-from sql.SqlTemplate import SqlTemplate
-from csharp.CSharpTemplate import parseCSharp
-from java.JavaTemplate import parseJava
+from cpp.CppTemplate import parseCpp
 import re
 import collections
 import random
@@ -21,15 +19,8 @@ def tokenizeNL(nl):
 def tokenizeCode(code, lang):
   code = code.strip().decode('utf-8').encode('ascii', 'replace')
   typedCode = None
-  if lang == "sql":
-    query = SqlTemplate(code, regex=True)
-    typedCode = query.parseSql()
-  elif lang == "csharp":
-    typedCode = parseCSharp(code)
-  elif lang == "python":
-    typedCode = q.strip().decode('utf-8').encode('ascii', 'replace').split("\\s")
-  elif lang == "java":
-    typedCode = parseJava(code)
+  if lang == "cpp":
+    typedCode = parseCpp(code)
 
   tokens = [re.sub( '\s+', ' ', x.strip())  for x in typedCode]
   return tokens
@@ -126,6 +117,14 @@ def get_data(filename, vocab, dont_skip, max_code_length, max_nl_length):
   f.close()
 
 
+def checkfile(fname):
+  if os.path.isfile(fname):
+    return
+  else:
+    print 'file ' + fname + ' does not exist.'
+    sys.exit(1)
+
+    
 if __name__ == '__main__':
 
   lang = sys.argv[1]
@@ -134,13 +133,22 @@ if __name__ == '__main__':
   code_unk_threshold = int(sys.argv[4])
   nl_unk_threshold = int(sys.argv[5])
 
-  if lang == 'java':
-    datadir = os.environ['CODENN_DIR'] + '/data/' + lang
+  if lang == 'cpp':
+    datadir = os.environ['CODENN_WORK']
   else:
-    datadir = os.environ['CODENN_DIR'] + '/data/stackoverflow/' + lang
+    print 'lang should be cpp instead of ' + lang
+    sys.exit(1)
+
+  trainfile=os.path.join(datadir, 'train.txt')
+  validfile=os.path.join(datadir, 'valid.txt')
+  testfile =os.path.join(datadir, 'test.txt' )
   
-  vocab = buildVocab(datadir + '/train.txt', code_unk_threshold, nl_unk_threshold, lang)
-  get_data(datadir + '/train.txt', vocab, False, max_code_len, max_nl_len)
-  get_data(datadir + '/valid.txt', vocab, False, max_code_len, max_nl_len)
-  get_data(datadir + '/dev/dev.txt', vocab, True, max_code_len, max_nl_len)
-  get_data(datadir + '/eval/eval.txt', vocab, True, max_code_len, max_nl_len)
+  checkfile(trainfile)
+  checkfile(validfile)
+  checkfile(testfile)
+  
+  vocab = buildVocab(trainfile, code_unk_threshold, nl_unk_threshold, lang)
+  sys.exit()
+  get_data(trainfile, vocab, False, max_code_len, max_nl_len)
+  get_data(validfile, vocab, False, max_code_len, max_nl_len)
+  get_data(testfile, vocab, False, max_code_len, max_nl_len)
