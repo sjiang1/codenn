@@ -141,6 +141,7 @@ function main()
 	local total_cases = 0
 	-- local bleus = {}
 	-- local bestbleu = 0
+	local saved_epochs= {}
 	print(params)
 
 	local batch_order = {}
@@ -199,7 +200,7 @@ function main()
 		-- 	bestbleu = bleu
 		-- end
 
-		save_models(epoch)
+		saved_epochs = save_models(epoch, saved_epochs)
 
 		table.insert(val_accs, state_val.acc)
 		table.insert(train_accs, state_train.acc)
@@ -212,13 +213,22 @@ function main()
 	end
 end
 
-function save_models(epoch) 
+function save_models(epoch, saved_epochs)
 	print('saving models')
 	-- torch.save(opt.language .. '.encoder', encoder.cell) -- save the whole encoder
 	-- torch.save(opt.language .. '.decoder', decoder.cells[1]) -- save only the decoder cell
 	torch.save(opt.outdir .. '/' .. opt.language .. '.encoder' .. '.e' .. tostring(epoch), encoder.cell) -- save the whole encoder
 	torch.save(opt.outdir .. '/' .. opt.language .. '.decoder' .. '.e' .. tostring(epoch), decoder.cells[1]) -- save only the decoder cell
 	print('saving models: ... done')
+
+	table.insert(saved_epochs, epoch)
+	while table.getn(saved_epochs) > 4 do
+	   head = table.remove(saved_epochs, 1)
+	   os.remove(opt.outdir .. '/' .. opt.language .. '.decoder' .. '.e' .. tostring(head))
+	   os.remove(opt.outdir .. '/' .. opt.language .. '.encoder' .. '.e' .. tostring(head))
+	end
+
+	return saved_epochs
 end
 
 main()
