@@ -222,7 +222,7 @@ function save_models(epoch, saved_epochs)
 	print('saving models: ... done')
 
 	table.insert(saved_epochs, epoch)
-	while table.getn(saved_epochs) > 4 do
+	while #saved_epochs > 4 do
 	   head = table.remove(saved_epochs, 1)
 	   os.remove(opt.outdir .. '/' .. opt.language .. '.decoder' .. '.e' .. tostring(head))
 	   os.remove(opt.outdir .. '/' .. opt.language .. '.encoder' .. '.e' .. tostring(head))
