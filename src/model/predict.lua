@@ -82,7 +82,7 @@ function beam(prevs, all_h, infmask, max_length, beam_size, dec)
 	alignments={},
 	strmap = {},
 	pos=1,
-}
+	}
 
 local beams = {[1]=default_beam}
 
@@ -191,11 +191,18 @@ function main()
 	cmd:option('-beamsize',  10, 'beam size?')
 	cmd:option('-language', 'code', 'Code language')
 	cmd:option('-rnn_size', 400, 'Dimension')
+	cmd:option('-outdir', '', 'directory for saving models')
+	cmd:option('-outfile', '', 'output file name')
 	local working_dir = os.getenv("CODENN_WORK")
 
 	cmd:text()
 	opt = cmd:parse(arg)
 
+	if opt.outdir == nil or opt.outfile == nil or opt.outdir == '' or opt.outfile == '' then
+	   print('Error: -outdir and -outfile are not provided')
+	   os.exit()
+	end
+	
 	params =      {
 		max_length=20,
 		beam_size=opt.beamsize,
@@ -211,7 +218,8 @@ function main()
 		init_gpu(opt.gpuidx)
 
 	  vocab = torch.load(working_dir .. '/vocab.data.' .. opt.language)
-	  state_test = torch.load(working_dir .. '/eval.data.' .. opt.language)
+	  -- state_test = torch.load(working_dir .. '/eval.data.' .. opt.language)
+	  state_test = torch.load(working_dir .. '/test.data.' .. opt.language)
 		encoderCell = torch.load(opt.encoder)
 		decoderCell= torch.load(opt.decoder)
 
@@ -222,8 +230,9 @@ function main()
 		g_disable_dropout(decoderCell)
 		local predictions, alignments  = unpack(get_predictions(state_test, params.max_length, params.beam_size, encoderCell, decoderCell))
 
-		local tmpFilename = os.tmpname()
-		local tf = io.open(tmpFilename, 'w')
+		-- local tmpFilename = os.tmpname()
+		-- local tf = io.open(tmpFilename .. '.align', 'w')
+		local tf = io.open(opt.outfile, 'w')
 		for id, aligns in pairs(alignments) do
 			tf:write(id.. '\n')
 			for _, line in pairs(aligns) do
@@ -231,15 +240,18 @@ function main()
 			end
 		end
 		tf:close()
-		print('Alignments in  ' .. tmpFilename)
+		-- print('Alignments in  ' .. tmpFilename)
+		print('Alignments in  ' .. opt.outfile .. '.align')
 
-		local tmpFilename = os.tmpname()
-		local tf = io.open(tmpFilename, 'w')
+		-- local tmpFilename = os.tmpname()
+		-- local tf = io.open(tmpFilename, 'w')
+		local tf = io.open(opt.outfile, 'w')
 		for _, line in ipairs(predictions) do
 			tf:write(line[1] .. '\t' .. line[2]  .. '\n')
 		end
 		tf:close()
-		print('Predictions in  ' .. tmpFilename)
+		-- print('Predictions in  ' .. tmpFilename)
+		print('Predictions in  ' .. opt.outfile)
 
 
 	end
