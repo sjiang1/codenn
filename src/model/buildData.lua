@@ -95,7 +95,7 @@ function main()
  	torch.save(working_dir .. '/train.data.' .. opt.language, get_data(working_dir .. '/train.txt.' .. opt.language, vocab, opt.batch_size, false))
  	torch.save(working_dir .. '/valid.data.' .. opt.language, get_data(working_dir .. '/valid.txt.' .. opt.language, vocab, opt.batch_size, false))
 
-	if (opt.language == 'java') then
+	if (opt.language == 'cpp') then
 	    torch.save(working_dir .. '/test.data.' .. opt.language, get_data(working_dir .. '/test.txt.' .. opt.language, vocab, 1, true))
 	else
             torch.save(working_dir .. '/dev.data.' .. opt.language, get_data(working_dir .. '/dev.txt.' .. opt.language, vocab, 1, true))
