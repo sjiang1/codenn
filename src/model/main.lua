@@ -3,6 +3,8 @@ require('encoder')
 require('decoder')
 include "predict.lua"
 
+unpack = table.unpack
+
 function setup()
 	cutorch.manualSeedAll(112300)
 	encoder = Encoder({emb_dim=vocab.max_code, emb_out=params.encoder_emb}, params)
@@ -37,25 +39,25 @@ end
 
 -- compute bleu score on test set
 function run_bleu(state)
-	print('predicting')
-	encoder:evaluate()
-	decoder:evaluate()
-	local predictions, alignments = unpack(get_predictions(state, params.max_length, params.beam_size, encoder.cell, decoder.cells[1]))
-	local tmpFilename = os.tmpname()
-	local tf = io.open(tmpFilename, 'w')
-	for _, line in ipairs(predictions) do
-		tf:write(line[1] .. '\t' .. line[2] .. '\n')
-	end
-	tf:close()
-	local cmd
-	cmd = 'python ../utils/bleu.py ' .. params.dev_ref_file .. ' < ' .. tmpFilename 
-	print(cmd .. '\n')
-	local bleu = tonumber(os.capture(cmd))
-	print('BLEU: ' .. bleu .. '\n')
+        print('predicting')
+        encoder:evaluate()
+        decoder:evaluate()
+        local predictions, alignments = unpack(get_predictions(state, params.max_length, params.beam_size, encoder.cell, decoder.cells[1]))
+        local tmpFilename = os.tmpname()
+        local tf = io.open(tmpFilename, 'w')
+        for _, line in ipairs(predictions) do
+                tf:write(line[1] .. '\t' .. line[2] .. '\n')
+        end
+        tf:close()
+        local cmd
+        cmd = 'python ../utils/bleu.py ' .. params.dev_ref_file .. ' < ' .. tmpFilename
+        print(cmd .. '\n')
+        local bleu = tonumber(os.capture(cmd))
+        print('BLEU: ' .. bleu .. '\n')
 
-	encoder:training()
-	decoder:training()
-	return bleu
+        encoder:training()
+        decoder:training()
+        return bleu
 end
 
 function main()
@@ -67,7 +69,7 @@ function main()
 	cmd:option('-decoder_emb', 400, 'decoder embedding size')
 	cmd:option('-init_weight', 0.35, 'length')
 	cmd:option('-dev_ref_file',  'human_true.txt', 'which file to compute bleu against?')
-	cmd:option('-testfile',  'human.data', 'which test file?')
+	-- cmd:option('-testfile',  'human.data', 'which test file?')
 	cmd:option('-dropout', 0.5, 'length')
 	cmd:option('-normalize', 1, 'length')
 	cmd:option('-beam_size', 10, 'Beam Size')
@@ -76,13 +78,14 @@ function main()
 	cmd:option('-lr', 0.5, 'Initial learning rate')
 	cmd:option('-shuffle', false, 'Shuffle batches?')
 	cmd:option('-language', 'code', 'Code language')
+	cmd:option('-outdir', '', 'directory for saving models')
 
 	cmd:text()
 	opt = cmd:parse(arg)
 
 	params =      {
 		gpu=opt.gpuidx,
-		dev_ref_file=opt.dev_ref_file,
+		-- dev_ref_file=opt.dev_ref_file,
 		layers=1,
 		rnn_size=opt.rnn_size,
 		encoder_emb=opt.encoder_emb,
@@ -107,8 +110,9 @@ function main()
 	state_train.name = "training"
 	state_val = torch.load(working_dir .. '/valid.data.' .. opt.language)
 	state_val.name = "validation"
-	state_test = torch.load(working_dir .. '/dev.data.' .. opt.language)
-	local states={state_train, state_val, state_test}
+	-- state_test = torch.load(working_dir .. '/dev.data.' .. opt.language)
+	-- local states={state_train, state_val, state_test}
+	local states={state_train, state_val}
 
 	params.max_nl_length = state_train.max_nl_length
 	params.max_code_length = state_train.max_code_length
@@ -131,12 +135,12 @@ function main()
 	end
 
 	local val_accs = {}
-	local bleus= {}
+	-- local bleus= {}
 	local train_accs = {}
 	local start_time = torch.tic()
 	local total_cases = 0
-	local bleus = {}
-	local bestbleu = 0
+	-- local bleus = {}
+	-- local bestbleu = 0
 	print(params)
 
 	local batch_order = {}
@@ -167,7 +171,7 @@ function main()
 		cps = floor(total_cases / torch.toc(start_time))
 		epoch = epoch + 1
 
-		local bleu = run_bleu(state_test)
+		-- local bleu = run_bleu(state_test)
 		run_val(state_val)
 
 		-- Reduce learning rate if val acc goes down
@@ -190,17 +194,19 @@ function main()
 		', learning rate=' .. string.format("%.3f", params.learningRate) ..
 		', gpu=' .. opt.gpuidx)
 
-		if bleu > bestbleu then
-			save_models()
-			bestbleu = bleu
-		end
+		-- if bleu > bestbleu then
+		-- 	save_models()
+		-- 	bestbleu = bleu
+		-- end
+
+		save_models(epoch)
 
 		table.insert(val_accs, state_val.acc)
 		table.insert(train_accs, state_train.acc)
-		table.insert(bleus, bleu)
+		-- table.insert(bleus, bleu)
 		reset_state(state_train)
 		reset_state(state_val)
-		reset_state(state_test)
+		-- reset_state(state_test)
 
 		collectgarbage()
 	end
@@ -208,8 +214,10 @@ end
 
 function save_models() 
 	print('saving models')
-	torch.save(opt.language .. '.encoder', encoder.cell) -- save the whole encoder
-	torch.save(opt.language .. '.decoder', decoder.cells[1]) -- save only the decoder cell
+	-- torch.save(opt.language .. '.encoder', encoder.cell) -- save the whole encoder
+	-- torch.save(opt.language .. '.decoder', decoder.cells[1]) -- save only the decoder cell
+	torch.save(opt.outdir .. opt.language .. '.encoder' .. '.e' .. tostring(epoch), encoder.cell) -- save the whole encoder
+	torch.save(opt.outdir .. opt.language .. '.decoder' .. '.e' .. tostring(epoch), decoder.cells[1]) -- save only the decoder cell
 end
 
 main()
