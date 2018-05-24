@@ -212,7 +212,7 @@ function main()
 	end
 end
 
-function save_models() 
+function save_models(epoch) 
 	print('saving models')
 	-- torch.save(opt.language .. '.encoder', encoder.cell) -- save the whole encoder
 	-- torch.save(opt.language .. '.decoder', decoder.cells[1]) -- save only the decoder cell
