@@ -1,5 +1,4 @@
--- Adapted from https://github.com/wojciechz/learning_to_execute
-
+unpack = table.unpack
 --[[
 --
   Copyright 2014 Google Inc. All Rights Reserved.

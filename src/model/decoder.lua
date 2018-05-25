@@ -1,3 +1,5 @@
+unpack = table.unpack
+
 local Decoder, parent = torch.class('Decoder', 'nn.Module')
 include "MaskedLoss.lua"
 

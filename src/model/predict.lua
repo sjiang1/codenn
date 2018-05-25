@@ -1,4 +1,4 @@
-
+unpack = table.unpack
 include "utils.lua"
 
 function get_predictions(state, ml, bs, enc, dec)
@@ -191,7 +191,7 @@ function main()
 	cmd:option('-beamsize',  10, 'beam size?')
 	cmd:option('-language', 'code', 'Code language')
 	cmd:option('-rnn_size', 400, 'Dimension')
-	cmd:option('-outdir', '', 'directory for saving models')
+	cmd:option('-outdir', '', 'directory for saving predictions')
 	cmd:option('-outfile', '', 'output file name')
 	local working_dir = os.getenv("CODENN_WORK")
 
@@ -214,6 +214,9 @@ function main()
 	  rnn_size=opt.rnn_size}
 
 		print(params)
+   print('test file: ' .. working_dir .. '/test.data.' .. opt.language)
+   print('encoder: ' .. opt.encoder)
+   print('decoder: ' .. opt.decoder)
 
 		init_gpu(opt.gpuidx)
 
@@ -232,7 +235,7 @@ function main()
 
 		-- local tmpFilename = os.tmpname()
 		-- local tf = io.open(tmpFilename .. '.align', 'w')
-		local tf = io.open(opt.outfile, 'w')
+		local tf = io.open(opt.outdir .. '/' .. opt.outfile .. '.align', 'w')
 		for id, aligns in pairs(alignments) do
 			tf:write(id.. '\n')
 			for _, line in pairs(aligns) do
@@ -241,17 +244,17 @@ function main()
 		end
 		tf:close()
 		-- print('Alignments in  ' .. tmpFilename)
-		print('Alignments in  ' .. opt.outfile .. '.align')
+		print('Alignments in  ' .. opt.outdir .. '/' .. opt.outfile .. '.align')
 
 		-- local tmpFilename = os.tmpname()
 		-- local tf = io.open(tmpFilename, 'w')
-		local tf = io.open(opt.outfile, 'w')
+		local tf = io.open(opt.outdir .. '/' .. opt.outfile, 'w')
 		for _, line in ipairs(predictions) do
 			tf:write(line[1] .. '\t' .. line[2]  .. '\n')
 		end
 		tf:close()
 		-- print('Predictions in  ' .. tmpFilename)
-		print('Predictions in  ' .. opt.outfile)
+		print('Predictions in  ' .. opt.outdir .. '/' .. opt.outfile)
 
 
 	end
