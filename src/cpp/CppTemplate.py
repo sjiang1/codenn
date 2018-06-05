@@ -7,7 +7,7 @@ import sys
 from cpp.CPP14Lexer import CPP14Lexer
 
 def parseCpp(code):
-    code = code.replace('\\n', '\n')
+    code = code.replace('\\<nl>', '\n')
     parsedVersion = []
     stream = antlr4.InputStream(code)
     lexer = CPP14Lexer(stream)
