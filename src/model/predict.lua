@@ -235,22 +235,23 @@ function main()
 
 		-- local tmpFilename = os.tmpname()
 		-- local tf = io.open(tmpFilename .. '.align', 'w')
-		local tf = io.open(opt.outdir .. '/' .. opt.outfile .. '.align', 'w')
-		for id, aligns in pairs(alignments) do
-			tf:write(id.. '\n')
-			for _, line in pairs(aligns) do
-				tf:write(table.concat(line, "|||||") .. '\n')
-			end
-		end
-		tf:close()
-		-- print('Alignments in  ' .. tmpFilename)
-		print('Alignments in  ' .. opt.outdir .. '/' .. opt.outfile .. '.align')
+		-- local tf = io.open(opt.outdir .. '/' .. opt.outfile .. '.align', 'w')
+		-- for id, aligns in pairs(alignments) do
+		-- 	tf:write(id.. '\n')
+		-- 	for _, line in pairs(aligns) do
+		-- 		tf:write(table.concat(line, "|||||") .. '\n')
+		-- 	end
+		-- end
+		-- tf:close()
+		-- -- print('Alignments in  ' .. tmpFilename)
+		-- print('Alignments in  ' .. opt.outdir .. '/' .. opt.outfile .. '.align')
 
 		-- local tmpFilename = os.tmpname()
 		-- local tf = io.open(tmpFilename, 'w')
 		local tf = io.open(opt.outdir .. '/' .. opt.outfile, 'w')
 		for _, line in ipairs(predictions) do
-			tf:write(line[1] .. '\t' .. line[2]  .. '\n')
+			-- tf:write(line[1] .. '\t' .. line[2]  .. '\n')
+			tf:write('<s> ' .. line[2]  .. ' </s>\n')
 		end
 		tf:close()
 		-- print('Predictions in  ' .. tmpFilename)

@@ -14,7 +14,8 @@ END = 4
 
 def tokenizeNL(nl):
   nl = nl.strip().decode('utf-8').encode('ascii', 'replace')
-  return re.findall(r"[\w]+|[^\s\w]", nl)
+  return nl.split() # tokenization is done before codenn (funcom project)
+  # return re.findall(r"[\w]+|[^\s\w]", nl)
 
 def tokenizeCode(code, lang):
   code = code.strip().decode('utf-8').encode('ascii', 'replace')
@@ -89,7 +90,7 @@ def get_data(filename, vocab, dont_skip, max_code_length, max_nl_length):
     codeToks  = tokenizeCode(code, vocab["lang"])
     nlToks = tokenizeNL(nl)
 
-    datasetEntry = {"id": rid, "code": code, "code_sizes": len(codeToks), "code_num":[], "nl_num":[]}
+    datasetEntry = {"id": rid, "code": code, "code_sizes": len(codeToks), "code_num":[], "nl":[], "nl_num":[]}
 
     for tok in codeToks:
       if tok not in vocab["code_to_num"]:
@@ -101,6 +102,7 @@ def get_data(filename, vocab, dont_skip, max_code_length, max_nl_length):
       if word not in vocab["nl_to_num"]:
         vocab["nl_to_num"][word] = UNK
       datasetEntry["nl_num"].append(vocab["nl_to_num"][word])
+      datasetEntry["nl"].append(word)
 
     datasetEntry["nl_num"].append(vocab["nl_to_num"]["CODE_END"])
 
@@ -115,6 +117,14 @@ def get_data(filename, vocab, dont_skip, max_code_length, max_nl_length):
   f = open(os.environ["CODENN_WORK"] + '/' + os.path.basename(filename) + "." + lang, 'w')
   f.write(json.dumps(dataset))
   f.close()
+
+  f2 = open(os.environ["CODENN_WORK"] + '/' + os.path.basename(filename) + "." + lang + ".forcheck", 'w')
+  for entry in dataset:
+    for k, v in entry.items():
+      f2.write(str(k) + ':'+ str(v) + '\t')
+
+    f2.write("\n")
+  f2.close()
 
 
 def checkfile(fname):
