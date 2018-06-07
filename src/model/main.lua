@@ -85,7 +85,7 @@ function main()
 
 	params =      {
 		gpu=opt.gpuidx,
-		-- dev_ref_file=opt.dev_ref_file,
+		dev_ref_file=opt.dev_ref_file,
 		layers=1,
 		rnn_size=opt.rnn_size,
 		encoder_emb=opt.encoder_emb,
@@ -139,8 +139,8 @@ function main()
 	local train_accs = {}
 	local start_time = torch.tic()
 	local total_cases = 0
-	-- local bleus = {}
-	-- local bestbleu = 0
+	local bleus = {}
+	local bestbleu = 0
 	local saved_epochs= {}
 	print(params)
 
@@ -173,6 +173,7 @@ function main()
 		epoch = epoch + 1
 
 		-- local bleu = run_bleu(state_test)
+		local bleu = run_bleu(state_val)
 		run_val(state_val)
 
 		-- Reduce learning rate if val acc goes down
@@ -195,16 +196,15 @@ function main()
 		', learning rate=' .. string.format("%.3f", params.learningRate) ..
 		', gpu=' .. opt.gpuidx)
 
-		-- if bleu > bestbleu then
-		-- 	save_models()
-		-- 	bestbleu = bleu
-		-- end
-
-		saved_epochs = save_models(epoch, saved_epochs)
+		if bleu > bestbleu then
+		   -- save_models()
+		   saved_epochs = save_models(epoch, saved_epochs)
+		   bestbleu = bleu
+		end
 
 		table.insert(val_accs, state_val.acc)
 		table.insert(train_accs, state_train.acc)
-		-- table.insert(bleus, bleu)
+		table.insert(bleus, bleu)
 		reset_state(state_train)
 		reset_state(state_val)
 		-- reset_state(state_test)
