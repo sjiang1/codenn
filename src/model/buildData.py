@@ -126,6 +126,12 @@ def get_data(filename, vocab, dont_skip, max_code_length, max_nl_length):
     f2.write("\n")
   f2.close()
 
+  f3 = open(os.environ["CODENN_WORK"] + '/' + os.path.basename(filename) + "." + lang + ".ref", 'w')
+  for entry in dataset:
+    f3.write(entry["id"] + '\t<s> ' + ' '.join(entry["nl"]) + ' </s>\n')
+    
+  f3.close()
+
 
 def checkfile(fname):
   if os.path.isfile(fname):
