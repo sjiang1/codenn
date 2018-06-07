@@ -249,11 +249,13 @@ function main()
 		-- local tmpFilename = os.tmpname()
 		-- local tf = io.open(tmpFilename, 'w')
 		local tf = io.open(opt.outdir .. '/' .. opt.outfile, 'w')
+		local tf2 = io.open(opt.outdir .. '/' .. opt.outfile .. '.id', 'w')
 		for _, line in ipairs(predictions) do
-			-- tf:write(line[1] .. '\t' .. line[2]  .. '\n')
-			tf:write('<s> ' .. line[2]  .. ' </s>\n')
+			tf2:write(line[1] .. '\t' .. line[2]  .. '\n')
+			tf:write(line[2]  .. '\n')
 		end
 		tf:close()
+		tf2:close()
 		-- print('Predictions in  ' .. tmpFilename)
 		print('Predictions in  ' .. opt.outdir .. '/' .. opt.outfile)
 
