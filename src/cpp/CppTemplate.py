@@ -17,13 +17,13 @@ def parseCpp(code):
     identifiers = {}
     identCount = 0
     for token in toks.tokens:
-        if token.type == 126:
+        if token.type == 126 or token.type == 127 or token.type == 128 or token.type == 129 or token.type == 130 or token.type == 135:
             parsedVersion += ["CODE_INTEGER"]
-        elif token.type == 133:
+        elif token.type == 133 or token.type == 136:
             parsedVersion += ["CODE_REAL"]
-        elif token.type == 132:
+        elif token.type == 132 or token.type == 138:
             parsedVersion += ["CODE_CHAR"]
-        elif token.type == 134:
+        elif token.type == 134 or token.type == 137:
             parsedVersion += ["CODE_STRING"]
         elif token.type == 139 or token.type == 140 or token.type == 141 or token.type == 142: # whitespace and comments
             pass

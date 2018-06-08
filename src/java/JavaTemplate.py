@@ -4,11 +4,10 @@ import re
 import os.path
 
 import sys
-# sys.path.insert(0, '/home/siyuan_jiang_827/codenn-java/src/java/')
 from java.JavaLexer import JavaLexer
 
 def parseJava(code):
-    code = code.replace('\\n', '\n')
+    code = code.replace('\\<nl>', '\n')
     parsedVersion = []
     stream = antlr4.InputStream(code)
     lexer = JavaLexer(stream)
