@@ -1,4 +1,3 @@
-from cpp.CppTemplate import parseCpp
 import re
 import collections
 import random
@@ -17,17 +16,14 @@ def tokenizeNL(nl):
   return nl.split() # tokenization is done before codenn (funcom project)
   # return re.findall(r"[\w]+|[^\s\w]", nl)
 
-def tokenizeCode(code, lang):
+def tokenizeCode(code, parsefunc):
   code = code.strip().decode('utf-8').encode('ascii', 'replace')
-  typedCode = None
-  if lang == "cpp":
-    typedCode = parseCpp(code)
-
+  typedCode = parsefunc(code)
   tokens = [re.sub( '\s+', ' ', x.strip())  for x in typedCode]
   return tokens
 
 # lang can be csharp or code
-def buildVocab(filename, code_unk_threshold, nl_unk_threshold, lang):
+def buildVocab(filename, code_unk_threshold, nl_unk_threshold, lang, parsefunc):
   vocabfile = os.environ["CODENN_WORK"] + '/vocab.' + lang
   if os.path.isfile(vocabfile):
     with open(vocabfile) as json_vocabfile:
@@ -46,7 +42,7 @@ def buildVocab(filename, code_unk_threshold, nl_unk_threshold, lang):
 
   for line in open(filename, "r"):
     qid, rid, nl, code, weight = line.strip().split('\t')
-    tokens.update(tokenizeCode(code, lang))
+    tokens.update(tokenizeCode(code, parsefunc))
     words.update(tokenizeNL(nl))
 
   token_count = END + 1
@@ -80,14 +76,14 @@ def buildVocab(filename, code_unk_threshold, nl_unk_threshold, lang):
   return vocab
 
 
-def get_data(filename, vocab, dont_skip, max_code_length, max_nl_length):
-
+def get_data(filename, vocab, dont_skip, max_code_length, max_nl_length, parsefunc):
+  lang = vocab["lang"]
   dataset = []
   skipped = 0
   for line in open(filename, 'r'):
 
     qid, rid, nl, code, wt = line.strip().split('\t')
-    codeToks  = tokenizeCode(code, vocab["lang"])
+    codeToks  = tokenizeCode(code, parsefunc)
     nlToks = tokenizeNL(nl)
 
     datasetEntry = {"id": rid, "code": code, "code_sizes": len(codeToks), "code_num":[], "nl":[], "nl_num":[]}
@@ -149,10 +145,16 @@ if __name__ == '__main__':
   code_unk_threshold = int(sys.argv[4])
   nl_unk_threshold = int(sys.argv[5])
 
+  datadir = os.path.join(os.environ['CODENN_DIR'], 'data/', lang)
+  parsefunc = None
   if lang == 'cpp':
-    datadir = os.path.join(os.environ['CODENN_DIR'], 'data/cpp')
+    from cpp.CppTemplate import parseCpp
+    parsefunc = parseCpp    
+  elif lang == 'java':
+    from java.JavaTemplate import parseJava
+    parsefunc = parseJava
   else:
-    print 'lang should be cpp instead of ' + lang
+    print 'lang should be cpp or java instead of ' + lang
     sys.exit(1)
 
   trainfile=os.path.join(datadir, 'train.txt')
@@ -163,7 +165,7 @@ if __name__ == '__main__':
   checkfile(validfile)
   checkfile(testfile)
   
-  vocab = buildVocab(trainfile, code_unk_threshold, nl_unk_threshold, lang)
-  get_data(trainfile, vocab, False, max_code_len, max_nl_len)
-  get_data(validfile, vocab, False, max_code_len, max_nl_len)
-  get_data(testfile, vocab, False, max_code_len, max_nl_len)
+  vocab = buildVocab(trainfile, code_unk_threshold, nl_unk_threshold, lang, parsefunc)
+  get_data(trainfile, vocab, False, max_code_len, max_nl_len, parsefunc)
+  get_data(validfile, vocab, False, max_code_len, max_nl_len, parsefunc)
+  get_data(testfile, vocab, False, max_code_len, max_nl_len, parsefunc)
