@@ -3,7 +3,7 @@
 Extra notes on installation:
 * Torch installation: ```export TORCH_NVCC_FLAGS="-D__CUDA_NO_HALF_OPERATORS__"```
   * to overcome the LuaJIT low memory limit when using torch.save, **install torch with Lua 5.2 instead of LuaJIT**\
-    use ```TORCH_LUA_VERSION=LUA52 ./install.sh``` to install Torch.
+    use ```./clean.sh; TORCH_NVCC_FLAGS="-D__CUDA_NO_HALF_OPERATORS__" CC=/usr/bin/gcc-6 CXX=/usr/bin/g++-6 TORCH_LUA_VERSION=LUA52 ./install.sh``` to install Torch.
 * Cutorch installation: [torch/cutorch](https://github.com/torch/cutorch/)\
   ```luarocks install cutorch```
 * antlr4: we need version 4.5 specified in src/csharp/CSharp4Lexer.py\
