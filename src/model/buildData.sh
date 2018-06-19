@@ -1,11 +1,11 @@
 #!/bin/bash
 
-MAX_CODE_LENGTH=100
-MAX_NL_LENGTH=100
-BATCH_SIZE=100
-
 curdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 lang=$1
+
+MAX_CODE_LENGTH=$2 # codenn default: 100
+MAX_NL_LENGTH=$3   # codenn default: 100
+BATCH_SIZE=$4      # codenn default: 100
 
 # Create working directory
 if [ ! -d "$CODENN_WORK" ]; then
