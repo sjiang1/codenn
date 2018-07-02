@@ -114,19 +114,14 @@ def get_data(filename, vocab, dont_skip, max_code_length, max_nl_length, parsefu
   f.write(json.dumps(dataset))
   f.close()
 
-  f2 = open(os.environ["CODENN_WORK"] + '/' + os.path.basename(filename) + "." + lang + ".forcheck", 'w')
-  for entry in dataset:
-    for k, v in entry.items():
-      f2.write(str(k) + ':'+ str(v) + '\t')
-
-    f2.write("\n")
-  f2.close()
-
   f3 = open(os.environ["CODENN_WORK"] + '/' + os.path.basename(filename) + "." + lang + ".ref", 'w')
+  f4 = open(os.environ["CODENN_WORK"] + '/' + os.path.basename(filename) + "." + lang + ".ref.final", 'w')
   for entry in dataset:
     f3.write(entry["id"] + '\t' + ' '.join(entry["nl"]) + '\n')
+    f4.write(' '.join(entry["nl"]) + '\n')
     
   f3.close()
+  f4.close()
 
 
 def checkfile(fname):
