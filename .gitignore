@@ -71,5 +71,5 @@ src/java/AllInOne7.java
 
 src/model/workdir/
 
-data/cpp/
-data/java/
+data/cpp*
+data/java*
